@@ -12,27 +12,164 @@ function showProject() {
 
   const h1 = document.getElementById("projectname");
 
-  h1.textContent = "Progetto: "+ selected.getAttribute("id");
+  h1.textContent = "Progetto: "+ selected.getAttribute("class");
+  
 
+  //Dati che copieremo dal DB
+  const data = [[123,"Cane", "5kg", "10m", "user1", 12.30],
+    [456, "Gatto", "5kg", "10m", "user2", 10.30]
+  ]; //in project inseriremo i dati recuperati dal server
+
+  
+  //Per ogni progetto recuperato inseriamo nella tabella i valori
+  for(var i=0; i<data.length; i++){
+    const tbody = document.querySelector('#databody');
+    const tr = document.createElement('tr');
+    
+    tr.setAttribute("id", data[i][0]);
+    tbody.appendChild(tr);
+    
+    var td = document.createElement('td');
+    td.innerHTML = "<input type='radio' id="+ data[i][0] + " name='data' class=" + data[i][1] + " >";
+    tr.appendChild(td);
+
+    for(var j=0; j<data[0].length; j++){
+      if(j<1){
+        td = document.createElement('th');
+      }
+      else{
+        td = document.createElement('td');  
+      }
+      td.textContent = data[i][j];
+      tr.appendChild(td);
+    }
+  }
+
+  const deleteBtn = document.getElementById("btn-delete-data");
+  deleteBtn.addEventListener('click', deleteElem);
+
+  const createBtn = document.getElementById("btn-create-data");
+  createBtn.addEventListener('click', createData);
 }
 
-function deleteProject() {
+function insertData(){ 
+  document.getElementById("insert-data").setAttribute("hidden", true);
+
+  const data = document.querySelectorAll(".new-data-info");
+  console.log(data[0].value);
+  console.log(data[1].value);
+  console.log(data[2].value);
+  console.log(data[3].value);
+  const user = "new-user"; //leggi il nome utente
+  const orario = 17.40;
+
+  const tbody = document.querySelector('#databody');
+  const tr = document.createElement('tr');
+  
+  tr.setAttribute("id", data[0].value);
+  tbody.appendChild(tr);
+  
+  var td = document.createElement('td');
+  td.innerHTML = "<input type='radio' id="+ data[0].value + " name='data' class=" + data[1].value + " >";
+  tr.appendChild(td);
+
+  for(var j=0; j<data.length+2; j++){
+    if(j<1){
+      td = document.createElement('th');
+    }
+    else{
+      td = document.createElement('td');  
+    }
+    if(j<data.length){
+      td.textContent = data[j].value;
+    }
+    else if(j==data.length){ 
+      td.textContent=user;
+    }
+    else{ 
+      td.textContent=orario;
+    }
+    tr.appendChild(td);
+  }
+}
+
+function createData(){
+  document.getElementById("insert-data").removeAttribute("hidden");
+  
+  const insertBtn = document.getElementById("btn-insert-data");
+  insertBtn.addEventListener('click', insertData);
+}
+
+function deleteElem() {
   const selected = document.querySelector('input[type="radio"]:checked');
+  
   if(selected == null){
     alert("Seleziona un progetto.");
     return;
   }
   
-  console.log("Cancello progetto");
+  console.log("Cancello progetto " + selected.getAttribute("id"));
+
+  const id = selected.getAttribute("id");
+
+  const rowToDelete = document.getElementById(id);
+
+  //Come cancellare su html
+  rowToDelete.remove();
 
 }
 
+function insertProject() {
+  document.querySelector(".new-page").setAttribute("hidden", true);
+
+  const id = document.getElementById("projectid").value;
+  const name = document.getElementById("projectname").value;
+  const fields = document.getElementById("fields").value;
+  const user = "new-user"; //leggi il nome utente
+  const orario = 17.40;
+
+  const tbody = document.querySelector('#projectbody');
+  const tr = document.createElement('tr');
+  
+  tr.setAttribute("id", id);
+  tbody.appendChild(tr);
+  
+  var td = document.createElement('td');
+  td.innerHTML = "<input type='radio' id="+ id + " name='data' class=" + name + " >";
+  tr.appendChild(td);
+
+  for(var j=0; j<4; j++){
+    if(j<2){
+      td = document.createElement('th');
+      if(j==0){
+        td.textContent = id;
+      }
+      else{
+        td.textContent = name;
+      }
+    }
+    else{
+      td = document.createElement('td');  
+      if(j==2){
+        td.textContent=user;
+      }
+      else{
+        td.textContent=orario;
+      }
+    }
+    tr.appendChild(td);
+  }
+}
+
+// Da implementare nella homepage invece che in una diversa
 function createProject() {
   console.log("crea progetto");
 
-  document.querySelector(".home-page").setAttribute("hidden", true);
-
   document.querySelector(".new-page").removeAttribute("hidden");
+
+  const insertBtn = document.getElementById("btn-insert-project");
+  insertBtn.addEventListener('click', insertProject);
+  
 }
 
 function mainPage(){
@@ -59,7 +196,7 @@ function mainPage(){
     tbody.appendChild(tr);
     
     var td = document.createElement('td');
-    td.innerHTML = "<input type='radio' id="+ projects[i][1] + " name='project'>";
+    td.innerHTML = "<input type='radio' id="+ projects[i][0] + " name='project' class=" + projects[i][1] + " >";
     tr.appendChild(td);
 
     for(var j=0; j<projects[0].length; j++){
@@ -82,7 +219,7 @@ function mainPage(){
   createBtn.addEventListener('click', createProject);
 
   const deleteBtn = document.getElementById("btn-delete-project");
-  deleteBtn.addEventListener('click', deleteProject);
+  deleteBtn.addEventListener('click', deleteElem);
 }
 
 /**
@@ -92,10 +229,10 @@ function mainPage(){
  */
 function login(){
   const inpUser = document.getElementById("user");
-  const user = (inpUser.value || '').trim();
+  //const user = (inpUser.value || '').trim();
   
   const inpPsw = document.getElementById("pass");
-  const psw = (inpPsw.value || '').trim();
+  //const psw = (inpPsw.value || '').trim();
 
   inpUser.value = "";
   inpPsw.value = "";
